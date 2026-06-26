@@ -34,7 +34,11 @@ class IomAuthenticationTest extends TestCase
 
         $this->get('/dashboard?user_id=Superadmin')
             ->assertOk()
-            ->assertInertia(fn ($page) => $page->component('dashboard/admin'));
+            ->assertInertia(fn ($page) => $page
+                ->component('dashboard/admin')
+                ->where('currentUser.user_id', 'Superadmin')
+                ->where('permissions.isAdmin', true)
+                ->where('permissions.canCreateDocuments', true));
     }
 
     public function test_session_user_context_without_query_is_unauthorized(): void
