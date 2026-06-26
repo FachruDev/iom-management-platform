@@ -18,6 +18,7 @@ services:
       IOM_STORAGE_DISK: local
     volumes:
       - .:/var/www/html
+      - ./.env.docker:/var/www/html/.env:ro
       - /var/www/html/vendor
     depends_on:
       mysql:
