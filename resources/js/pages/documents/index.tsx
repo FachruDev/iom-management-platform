@@ -6,6 +6,7 @@ import { Pagination } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
 import documents from '@/routes/documents';
 import type { Department, IomDocument, Paginated } from '@/types';
+import { confirmAction } from '@/utils/alerts';
 import { resourceArray  } from '@/utils/resource';
 import type {ResourceCollection} from '@/utils/resource';
 import { preserveUserQuery, withUserQuery } from '@/utils/user-query';
@@ -25,6 +26,18 @@ export default function DocumentsIndex({
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         router.get(documents.index.url(), preserveUserQuery(Object.fromEntries(data.entries())), { preserveState: true, preserveScroll: true });
+    }
+
+    async function deleteDocument(document: IomDocument): Promise<void> {
+        const confirmed = await confirmAction({
+            title: 'Hapus dokumen?',
+            text: document.iom_number ? `${document.iom_number} akan dihapus.` : 'Dokumen ini akan dihapus.',
+            confirmButtonText: 'Ya, hapus',
+        });
+
+        if (confirmed) {
+            router.delete(withUserQuery(documents.destroy.url(document.id)));
+        }
     }
 
     return (
@@ -68,7 +81,7 @@ export default function DocumentsIndex({
                                         <div className="flex justify-end gap-2">
                                             <Link href={withUserQuery(documents.show.url(document.id))} className="rounded-md p-2 text-slate-600 hover:bg-slate-100" title="Detail"><Eye className="h-4 w-4" /></Link>
                                             <Link href={withUserQuery(documents.edit.url(document.id))} className="rounded-md p-2 text-slate-600 hover:bg-slate-100" title="Edit"><Edit className="h-4 w-4" /></Link>
-                                            <button onClick={() => confirm('Hapus dokumen ini?') && router.delete(withUserQuery(documents.destroy.url(document.id)))} className="rounded-md p-2 text-red-600 hover:bg-red-50" title="Delete"><Trash2 className="h-4 w-4" /></button>
+                                            <button onClick={() => void deleteDocument(document)} className="rounded-md p-2 text-red-600 hover:bg-red-50" title="Delete"><Trash2 className="h-4 w-4" /></button>
                                         </div>
                                     </td>
                                 </tr>

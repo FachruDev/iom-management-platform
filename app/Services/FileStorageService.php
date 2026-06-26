@@ -39,4 +39,14 @@ class FileStorageService
     {
         return Storage::disk($file->disk)->download($file->path, $file->original_name);
     }
+
+    public function preview(IomDocumentFile $file): StreamedResponse
+    {
+        return Storage::disk($file->disk)->response(
+            $file->path,
+            $file->original_name,
+            ['Content-Type' => $file->mime_type],
+            'inline',
+        );
+    }
 }

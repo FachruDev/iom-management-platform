@@ -9,6 +9,7 @@ import { Pagination } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import type { Department, Paginated, UserMapping } from '@/types';
+import { confirmAction } from '@/utils/alerts';
 import { resourceArray  } from '@/utils/resource';
 import type {ResourceCollection} from '@/utils/resource';
 import { preserveUserQuery, withUserQuery } from '@/utils/user-query';
@@ -38,6 +39,18 @@ export default function UserMappingsIndex({
         }
 
         form.post(withUserQuery(admin.userMappings.store.url()), { onSuccess: () => form.reset() });
+    }
+
+    async function deleteUserMapping(mapping: UserMapping): Promise<void> {
+        const confirmed = await confirmAction({
+            title: 'Hapus user mapping?',
+            text: `${mapping.name} (${mapping.user_id}) akan dihapus.`,
+            confirmButtonText: 'Ya, hapus',
+        });
+
+        if (confirmed) {
+            router.delete(withUserQuery(admin.userMappings.destroy.url(mapping.id)));
+        }
     }
 
     return (
@@ -85,7 +98,7 @@ export default function UserMappingsIndex({
                                                     <Button type="button" variant="secondary" className="h-8" onClick={() => {
  setEditing(mapping); form.setData({ user_id: mapping.user_id, name: mapping.name, department_id: String(mapping.department_id), role: mapping.role, active: mapping.active }); 
 }}>Edit</Button>
-                                                    <button onClick={() => confirm('Hapus user mapping ini?') && router.delete(withUserQuery(admin.userMappings.destroy.url(mapping.id)))} className="rounded-md p-2 text-red-600 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button>
+                                                    <button onClick={() => void deleteUserMapping(mapping)} className="rounded-md p-2 text-red-600 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button>
                                                 </div>
                                             </td>
                                         </tr>

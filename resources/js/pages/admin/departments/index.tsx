@@ -9,6 +9,7 @@ import { Pagination } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import type {Department, Paginated} from '@/types';
+import { confirmAction } from '@/utils/alerts';
 import { preserveUserQuery, withUserQuery } from '@/utils/user-query';
 
 export default function DepartmentsIndex({ departments, filters }: { departments: Paginated<Department>; filters: { search?: string } }) {
@@ -25,6 +26,18 @@ export default function DepartmentsIndex({ departments, filters }: { departments
         }
 
         form.post(withUserQuery(admin.departments.store.url()), { onSuccess: () => form.reset() });
+    }
+
+    async function deleteDepartment(department: Department): Promise<void> {
+        const confirmed = await confirmAction({
+            title: 'Hapus department?',
+            text: `${department.name} akan dihapus.`,
+            confirmButtonText: 'Ya, hapus',
+        });
+
+        if (confirmed) {
+            router.delete(withUserQuery(admin.departments.destroy.url(department.id)));
+        }
     }
 
     return (
@@ -70,7 +83,7 @@ export default function DepartmentsIndex({ departments, filters }: { departments
                                                     <Button type="button" variant="secondary" className="h-8" onClick={() => {
  setEditing(department); form.setData({ name: department.name, description: department.description ?? '' }); 
 }}>Edit</Button>
-                                                    <button onClick={() => confirm('Hapus department ini?') && router.delete(withUserQuery(admin.departments.destroy.url(department.id)))} className="rounded-md p-2 text-red-600 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button>
+                                                    <button onClick={() => void deleteDepartment(department)} className="rounded-md p-2 text-red-600 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button>
                                                 </div>
                                             </td>
                                         </tr>

@@ -14,6 +14,8 @@ Route::middleware('egis.user')->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     Route::resource('documents', DocumentController::class);
+    Route::get('/documents/{document}/files/{file}/preview', [DocumentController::class, 'preview'])
+        ->name('documents.files.preview');
     Route::get('/documents/{document}/files/{file}/download', [DocumentController::class, 'download'])
         ->name('documents.files.download');
     Route::delete('/documents/{document}/files/{file}', [DocumentController::class, 'destroyFile'])

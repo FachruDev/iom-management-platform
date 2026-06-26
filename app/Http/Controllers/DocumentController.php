@@ -129,6 +129,16 @@ class DocumentController extends Controller
         return $this->fileStorageService->download($file);
     }
 
+    public function preview(IomDocument $document, IomDocumentFile $file): StreamedResponse
+    {
+        abort_if($file->iom_document_id !== $document->id, 404);
+
+        $user = $this->currentUserService->require();
+        Gate::forUser($user)->authorize('download', $document);
+
+        return $this->fileStorageService->preview($file);
+    }
+
     public function destroyFile(IomDocument $document, IomDocumentFile $file): RedirectResponse
     {
         abort_if($file->iom_document_id !== $document->id, 404);

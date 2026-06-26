@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Department;
 use App\Models\IomDocument;
+use App\Models\IomDocumentFile;
 use App\Models\UserMapping;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -75,5 +76,31 @@ class IomDocumentFlowTest extends TestCase
         $this->delete("/documents/{$document->id}?user_id=Superadmin")->assertRedirect('/documents?user_id=Superadmin');
 
         $this->assertSoftDeleted($document);
+    }
+
+    public function test_user_can_preview_own_document_file(): void
+    {
+        Storage::fake('local');
+        $department = Department::factory()->create();
+        $owner = UserMapping::factory()->create(['department_id' => $department->id, 'user_id' => 'Owner']);
+        $document = IomDocument::factory()->create([
+            'department_id' => $department->id,
+            'uploaded_by_id' => $owner->id,
+        ]);
+
+        Storage::disk('local')->put("iom/{$document->id}/memo.pdf", 'PDF content');
+
+        $file = IomDocumentFile::factory()->create([
+            'iom_document_id' => $document->id,
+            'disk' => 'local',
+            'path' => "iom/{$document->id}/memo.pdf",
+            'original_name' => 'memo.pdf',
+            'mime_type' => 'application/pdf',
+            'extension' => 'pdf',
+        ]);
+
+        $this->get("/documents/{$document->id}/files/{$file->id}/preview?user_id=Owner")
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
     }
 }

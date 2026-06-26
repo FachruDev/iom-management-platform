@@ -1,17 +1,42 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Download, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Download, Edit, Eye, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import documents from '@/routes/documents';
 import files from '@/routes/documents/files';
 import type {IomDocument} from '@/types';
+import { confirmAction } from '@/utils/alerts';
 import { resourceItem  } from '@/utils/resource';
 import type {ResourceItem} from '@/utils/resource';
 import { withUserQuery } from '@/utils/user-query';
 
 export default function DocumentShow({ document }: { document: ResourceItem<IomDocument> }) {
     const item = resourceItem(document);
+
+    async function deleteDocument(): Promise<void> {
+        const confirmed = await confirmAction({
+            title: 'Hapus dokumen?',
+            text: item.iom_number ? `${item.iom_number} akan dihapus.` : 'Dokumen ini akan dihapus.',
+            confirmButtonText: 'Ya, hapus',
+        });
+
+        if (confirmed) {
+            router.delete(withUserQuery(documents.destroy.url(item.id)));
+        }
+    }
+
+    async function deleteFile(fileId: string, fileName: string): Promise<void> {
+        const confirmed = await confirmAction({
+            title: 'Hapus attachment?',
+            text: `${fileName} akan dihapus dari dokumen ini.`,
+            confirmButtonText: 'Ya, hapus',
+        });
+
+        if (confirmed) {
+            router.delete(withUserQuery(files.destroy.url({ document: item.id, file: fileId })));
+        }
+    }
 
     return (
         <AppLayout title="Detail Dokumen">
@@ -24,7 +49,7 @@ export default function DocumentShow({ document }: { document: ResourceItem<IomD
                     <Link href={withUserQuery(documents.edit.url(item.id))} className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-medium hover:bg-slate-50">
                         <Edit className="h-4 w-4" /> Edit
                     </Link>
-                    <Button variant="danger" onClick={() => confirm('Hapus dokumen ini?') && router.delete(withUserQuery(documents.destroy.url(item.id)))}>
+                    <Button variant="danger" onClick={() => void deleteDocument()}>
                         <Trash2 className="h-4 w-4" /> Hapus
                     </Button>
                 </div>
@@ -50,11 +75,14 @@ export default function DocumentShow({ document }: { document: ResourceItem<IomD
                             <div key={file.id} className="rounded-md border border-slate-200 p-3">
                                 <p className="truncate text-sm font-medium">{file.original_name}</p>
                                 <p className="text-xs text-slate-500">{file.extension.toUpperCase()} - {file.size_label}</p>
-                                <div className="mt-3 flex gap-2">
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    <a href={withUserQuery(files.preview.url({ document: item.id, file: file.id }))} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                                        <Eye className="h-4 w-4" /> Lihat
+                                    </a>
                                     <a href={withUserQuery(files.download.url({ document: item.id, file: file.id }))} className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-white">
                                         <Download className="h-4 w-4" /> Download
                                     </a>
-                                    <button onClick={() => confirm('Hapus attachment ini?') && router.delete(withUserQuery(files.destroy.url({ document: item.id, file: file.id })))} className="inline-flex h-9 items-center gap-2 rounded-md border border-red-200 px-3 text-sm font-medium text-red-600">
+                                    <button onClick={() => void deleteFile(file.id, file.original_name)} className="inline-flex h-9 items-center gap-2 rounded-md border border-red-200 px-3 text-sm font-medium text-red-600">
                                         <Trash2 className="h-4 w-4" /> Hapus
                                     </button>
                                 </div>
