@@ -16,7 +16,6 @@ class DocumentRepository
         return IomDocument::query()
             ->with(['department', 'uploader', 'files'])
             ->withCount('files')
-            ->when(! $user->isAdmin(), fn ($query) => $query->where('uploaded_by_id', $user->mappingId))
             ->when($departmentId, fn ($query) => $query->where('department_id', $departmentId))
             ->when($extension, fn ($query) => $query->whereHas('files', fn ($files) => $files->where('extension', $extension)))
             ->when($search, fn ($query) => $query->where(function ($query) use ($search): void {

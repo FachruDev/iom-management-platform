@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\IomDocument;
 use App\Services\CurrentUserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -40,6 +42,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $currentUser = $this->currentUserService->get();
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -47,13 +51,14 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
-            'currentUser' => fn () => $this->currentUserService->get()?->toSharedArray(),
+            'currentUser' => fn () => $currentUser?->toSharedArray(),
             'iomConfig' => [
                 'maxFileSizeKb' => config('iom.uploads.max_file_size_kb'),
                 'allowedExtensions' => config('iom.uploads.allowed_extensions'),
             ],
             'permissions' => [
-                'isAdmin' => fn () => $this->currentUserService->get()?->isAdmin() ?? false,
+                'isAdmin' => fn () => $currentUser?->isAdmin() ?? false,
+                'canCreateDocuments' => fn () => $currentUser !== null && Gate::forUser($currentUser)->allows('create', IomDocument::class),
             ],
         ];
     }

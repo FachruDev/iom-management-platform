@@ -21,10 +21,21 @@ class IomDocument extends Model
 
     protected $fillable = [
         'iom_number',
+        'effective_date',
         'department_id',
         'uploaded_by_id',
         'description',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'effective_date' => 'date',
+        ];
+    }
 
     /**
      * @return BelongsTo<Department, $this>

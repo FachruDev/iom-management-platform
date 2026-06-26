@@ -134,7 +134,7 @@ class DocumentController extends Controller
         abort_if($file->iom_document_id !== $document->id, 404);
 
         $user = $this->currentUserService->require();
-        Gate::forUser($user)->authorize('download', $document);
+        Gate::forUser($user)->authorize('preview', $document);
 
         return $this->fileStorageService->preview($file);
     }

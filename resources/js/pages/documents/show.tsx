@@ -47,12 +47,16 @@ export default function DocumentShow({ document }: { document: ResourceItem<IomD
                     <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Indeks
                 </Link>
                 <div className="flex gap-2">
-                    <Link href={withUserQuery(documents.edit.url(item.id))} className="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50 shadow-sm transition-all">
-                        <Edit className="h-3.5 w-3.5" /> Edit Dokumen
-                    </Link>
-                    <Button variant="danger" onClick={() => void deleteDocument()} className="rounded-xl h-9 text-xs font-bold px-4 cursor-pointer">
-                        <Trash2 className="h-3.5 w-3.5" /> Hapus Dokumen
-                    </Button>
+                    {item.can?.edit && (
+                        <Link href={withUserQuery(documents.edit.url(item.id))} className="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50 shadow-sm transition-all">
+                            <Edit className="h-3.5 w-3.5" /> Edit Dokumen
+                        </Link>
+                    )}
+                    {item.can?.delete && (
+                        <Button variant="danger" onClick={() => void deleteDocument()} className="rounded-xl h-9 text-xs font-bold px-4 cursor-pointer">
+                            <Trash2 className="h-3.5 w-3.5" /> Hapus Dokumen
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -68,6 +72,7 @@ export default function DocumentShow({ document }: { document: ResourceItem<IomD
                     <dl className="grid gap-4 sm:grid-cols-2 bg-slate-50/40 border border-slate-100 p-4 rounded-2xl text-xs font-semibold text-slate-600">
                         <div><dt className="text-slate-400 uppercase text-[10px] tracking-wider mb-0.5">Department</dt><dd className="font-bold text-slate-800">{item.department?.name || '-'}</dd></div>
                         <div><dt className="text-slate-400 uppercase text-[10px] tracking-wider mb-0.5">Uploader Personel</dt><dd className="font-bold text-slate-800">{item.uploader?.name || '-'}</dd></div>
+                        <div><dt className="text-slate-400 uppercase text-[10px] tracking-wider mb-0.5">Effective Date</dt><dd className="font-bold text-slate-800">{item.effective_date || '-'}</dd></div>
                         <div><dt className="text-slate-400 uppercase text-[10px] tracking-wider mb-0.5">Waktu Dibuat</dt><dd className="text-slate-500 font-medium">{item.created_at}</dd></div>
                         <div><dt className="text-slate-400 uppercase text-[10px] tracking-wider mb-0.5">Pembaruan Terakhir</dt><dd className="text-slate-500 font-medium">{item.updated_at}</dd></div>
                     </dl>
@@ -96,15 +101,21 @@ export default function DocumentShow({ document }: { document: ResourceItem<IomD
                                     </p>
 
                                     <div className="mt-3 flex flex-wrap gap-1.5">
-                                        <a href={withUserQuery(files.preview.url({ document: item.id, file: file.id }))} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1 px-2.5 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-colors">
-                                            <Eye className="h-3 w-3" /> Lihat <ExternalLink className="h-2.5 w-2.5 opacity-40" />
-                                        </a>
-                                        <a href={withUserQuery(files.download.url({ document: item.id, file: file.id }))} className="inline-flex h-8 items-center gap-1 px-3 rounded-lg bg-primary text-[11px] font-bold text-white shadow-xs hover:bg-primary/90 transition-colors">
-                                            <Download className="h-3 w-3" /> Unduh
-                                        </a>
-                                        <button onClick={() => void deleteFile(file.id, file.original_name)} className="inline-flex h-8 items-center gap-1 px-2.5 rounded-lg bg-white border border-transparent hover:border-rose-100 text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all ml-auto cursor-pointer">
-                                            <Trash2 className="h-3 w-3" /> Hapus
-                                        </button>
+                                        {item.can?.preview && (
+                                            <a href={withUserQuery(files.preview.url({ document: item.id, file: file.id }))} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1 px-2.5 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+                                                <Eye className="h-3 w-3" /> Lihat <ExternalLink className="h-2.5 w-2.5 opacity-40" />
+                                            </a>
+                                        )}
+                                        {item.can?.download && (
+                                            <a href={withUserQuery(files.download.url({ document: item.id, file: file.id }))} className="inline-flex h-8 items-center gap-1 px-3 rounded-lg bg-primary text-[11px] font-bold text-white shadow-xs hover:bg-primary/90 transition-colors">
+                                                <Download className="h-3 w-3" /> Unduh
+                                            </a>
+                                        )}
+                                        {item.can?.edit && (
+                                            <button onClick={() => void deleteFile(file.id, file.original_name)} className="inline-flex h-8 items-center gap-1 px-2.5 rounded-lg bg-white border border-transparent hover:border-rose-100 text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all ml-auto cursor-pointer">
+                                                <Trash2 className="h-3 w-3" /> Hapus
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))

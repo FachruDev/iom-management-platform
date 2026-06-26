@@ -14,25 +14,30 @@ class IomDocumentPolicy
 
     public function view(CurrentUserData $user, IomDocument $document): bool
     {
-        return $user->isAdmin() || $document->uploaded_by_id === $user->mappingId;
+        return true;
     }
 
     public function create(CurrentUserData $user): bool
     {
-        return true;
+        return $user->canManageOwnDocuments();
     }
 
     public function update(CurrentUserData $user, IomDocument $document): bool
     {
-        return $this->view($user, $document);
+        return $user->isAdmin() || ($user->canManageOwnDocuments() && $document->uploaded_by_id === $user->mappingId);
     }
 
     public function delete(CurrentUserData $user, IomDocument $document): bool
     {
-        return $this->view($user, $document);
+        return $this->update($user, $document);
     }
 
     public function download(CurrentUserData $user, IomDocument $document): bool
+    {
+        return $this->update($user, $document);
+    }
+
+    public function preview(CurrentUserData $user, IomDocument $document): bool
     {
         return $this->view($user, $document);
     }

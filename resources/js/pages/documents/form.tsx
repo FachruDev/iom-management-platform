@@ -11,6 +11,10 @@ import { resourceArray, resourceItem   } from '@/utils/resource';
 import type {ResourceCollection, ResourceItem} from '@/utils/resource';
 import { withUserQuery } from '@/utils/user-query';
 
+function today(): string {
+    return new Date().toISOString().slice(0, 10);
+}
+
 export default function DocumentForm({
     mode,
     document,
@@ -25,11 +29,13 @@ export default function DocumentForm({
     const departmentOptions = resourceArray(departments);
     const form = useForm<{
         iom_number: string;
+        effective_date: string;
         department_id: string;
         description: string;
         files: File[];
     }>({
         iom_number: existing?.iom_number ?? '',
+        effective_date: existing?.effective_date ?? today(),
         department_id: existing?.department_id ? String(existing.department_id) : '',
         description: existing?.description ?? '',
         files: [],
@@ -76,6 +82,14 @@ export default function DocumentForm({
                             <input value={form.data.iom_number} onChange={(event) => form.setData('iom_number', event.target.value)} className="mt-1.5 w-full rounded-xl border border-slate-200/80 bg-slate-50/40 px-3 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white focus:outline-hidden transition-all placeholder:text-slate-400 text-slate-700" placeholder="e.g., IOM-001" />
                             {form.errors.iom_number && <p className="mt-1.5 text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2.5 py-1 rounded-lg w-fit">{form.errors.iom_number}</p>}
                         </div>
+                        <div>
+                            <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Effective Date</label>
+                            <input type="date" value={form.data.effective_date} onChange={(event) => form.setData('effective_date', event.target.value)} className="mt-1.5 w-full rounded-xl border border-slate-200/80 bg-slate-50/40 px-3 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white focus:outline-hidden transition-all placeholder:text-slate-400 text-slate-700" />
+                            {form.errors.effective_date && <p className="mt-1.5 text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2.5 py-1 rounded-lg w-fit">{form.errors.effective_date}</p>}
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
                         <div>
                             <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Department</label>
                             <select value={form.data.department_id} onChange={(event) => form.setData('department_id', event.target.value)} className="mt-1.5 w-full rounded-xl border border-slate-200/80 bg-slate-50/40 px-3 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white focus:outline-hidden transition-all text-slate-600">

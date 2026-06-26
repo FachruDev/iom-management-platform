@@ -58,5 +58,15 @@ class DatabaseSeeder extends Seeder
                 'active' => true,
             ],
         );
+
+        UserMapping::updateOrCreate(
+            ['user_id' => 'ViewerUser'],
+            [
+                'name' => 'Viewer User',
+                'department_id' => $operations->id,
+                'role' => UserRole::Viewer,
+                'active' => true,
+            ],
+        );
     }
 }

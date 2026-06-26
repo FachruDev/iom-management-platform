@@ -33,6 +33,11 @@ class UserMappingFactory extends Factory
         return $this->state(fn (): array => ['role' => UserRole::Admin]);
     }
 
+    public function viewer(): static
+    {
+        return $this->state(fn (): array => ['role' => UserRole::Viewer]);
+    }
+
     public function inactive(): static
     {
         return $this->state(fn (): array => ['active' => false]);

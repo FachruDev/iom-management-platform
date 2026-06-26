@@ -21,6 +21,16 @@ class CurrentUserData extends Data
         return $this->role->isAdmin();
     }
 
+    public function canManageOwnDocuments(): bool
+    {
+        return $this->role->canManageOwnDocuments();
+    }
+
+    public function isViewer(): bool
+    {
+        return $this->role->isViewer();
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -36,6 +46,7 @@ class CurrentUserData extends Data
             ],
             'role' => $this->role->value,
             'is_admin' => $this->isAdmin(),
+            'is_viewer' => $this->isViewer(),
         ];
     }
 }

@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { 
-    Activity, FilePlus, FileText, ArrowRight, ShieldCheck, 
+    FilePlus, FileText, ArrowRight, ShieldCheck,
     Clock, Award, Users, Building2, CalendarDays, FileSpreadsheet 
 } from 'lucide-react';
 import { Card, StatPanel } from '@/components/ui/card';

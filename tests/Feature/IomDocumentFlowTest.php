@@ -41,7 +41,9 @@ class IomDocumentFlowTest extends TestCase
             ],
         ])->assertRedirect('/documents?user_id=UserDemo');
 
-        $this->assertDatabaseHas('iom_documents', ['iom_number' => 'IOM-001']);
+        $document = IomDocument::where('iom_number', 'IOM-001')->firstOrFail();
+
+        $this->assertSame(now()->toDateString(), $document->effective_date?->toDateString());
         $this->assertDatabaseCount('iom_document_files', 2);
         $this->assertDatabaseHas('activity_log', [
             'event' => 'Upload',
@@ -50,8 +52,9 @@ class IomDocumentFlowTest extends TestCase
         ]);
     }
 
-    public function test_user_cannot_view_other_users_document(): void
+    public function test_user_can_view_other_users_document_but_cannot_manage_it(): void
     {
+        Storage::fake('local');
         $department = Department::factory()->create();
         $owner = UserMapping::factory()->create(['department_id' => $department->id, 'user_id' => 'Owner']);
         UserMapping::factory()->create(['department_id' => $department->id, 'user_id' => 'Other']);
@@ -60,7 +63,22 @@ class IomDocumentFlowTest extends TestCase
             'uploaded_by_id' => $owner->id,
         ]);
 
-        $this->get("/documents/{$document->id}?user_id=Other")->assertForbidden();
+        Storage::disk('local')->put("iom/{$document->id}/memo.pdf", 'PDF content');
+
+        $file = IomDocumentFile::factory()->create([
+            'iom_document_id' => $document->id,
+            'disk' => 'local',
+            'path' => "iom/{$document->id}/memo.pdf",
+            'original_name' => 'memo.pdf',
+            'mime_type' => 'application/pdf',
+            'extension' => 'pdf',
+        ]);
+
+        $this->get("/documents/{$document->id}?user_id=Other")->assertOk();
+        $this->get("/documents/{$document->id}/edit?user_id=Other")->assertForbidden();
+        $this->delete("/documents/{$document->id}?user_id=Other")->assertForbidden();
+        $this->get("/documents/{$document->id}/files/{$file->id}/download?user_id=Other")->assertForbidden();
+        $this->get("/documents/{$document->id}/files/{$file->id}/preview?user_id=Other")->assertOk();
     }
 
     public function test_admin_can_delete_any_document(): void
@@ -102,5 +120,36 @@ class IomDocumentFlowTest extends TestCase
         $this->get("/documents/{$document->id}/files/{$file->id}/preview?user_id=Owner")
             ->assertOk()
             ->assertHeader('content-type', 'application/pdf');
+    }
+
+    public function test_viewer_role_can_only_view_and_preview_documents(): void
+    {
+        Storage::fake('local');
+        $department = Department::factory()->create();
+        $owner = UserMapping::factory()->create(['department_id' => $department->id, 'user_id' => 'Owner']);
+        UserMapping::factory()->viewer()->create(['department_id' => $department->id, 'user_id' => 'ViewerUser']);
+        $document = IomDocument::factory()->create([
+            'department_id' => $department->id,
+            'uploaded_by_id' => $owner->id,
+        ]);
+
+        Storage::disk('local')->put("iom/{$document->id}/memo.pdf", 'PDF content');
+
+        $file = IomDocumentFile::factory()->create([
+            'iom_document_id' => $document->id,
+            'disk' => 'local',
+            'path' => "iom/{$document->id}/memo.pdf",
+            'original_name' => 'memo.pdf',
+            'mime_type' => 'application/pdf',
+            'extension' => 'pdf',
+        ]);
+
+        $this->get('/documents?user_id=ViewerUser')->assertOk();
+        $this->get("/documents/{$document->id}?user_id=ViewerUser")->assertOk();
+        $this->get("/documents/{$document->id}/files/{$file->id}/preview?user_id=ViewerUser")->assertOk();
+        $this->get('/documents/create?user_id=ViewerUser')->assertForbidden();
+        $this->get("/documents/{$document->id}/edit?user_id=ViewerUser")->assertForbidden();
+        $this->delete("/documents/{$document->id}?user_id=ViewerUser")->assertForbidden();
+        $this->get("/documents/{$document->id}/files/{$file->id}/download?user_id=ViewerUser")->assertForbidden();
     }
 }

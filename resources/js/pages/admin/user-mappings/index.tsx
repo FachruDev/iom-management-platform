@@ -28,7 +28,13 @@ export default function UserMappingsIndex({
 }) {
     const departmentOptions = resourceArray(departments);
     const [editing, setEditing] = useState<UserMapping | null>(null);
-    const form = useForm({ user_id: '', name: '', department_id: '', role: 'User', active: true as boolean });
+    const form = useForm<{ user_id: string; name: string; department_id: string; role: UserMapping['role']; active: boolean }>({
+        user_id: '',
+        name: '',
+        department_id: '',
+        role: 'User',
+        active: true,
+    });
 
     function submit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -111,7 +117,7 @@ export default function UserMappingsIndex({
                             <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Hak Akses Sistem (Role)</label>
                             <select
                                 value={form.data.role}
-                                onChange={(event) => form.setData('role', event.target.value)}
+                                onChange={(event) => form.setData('role', event.target.value as UserMapping['role'])}
                                 className="mt-1.5 w-full rounded-xl border border-slate-200/80 bg-slate-50/40 px-3 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white focus:outline-hidden transition-all text-slate-600"
                             >
                                 {roles.map((role) => <option key={role} value={role}>{role}</option>)}
@@ -201,6 +207,8 @@ export default function UserMappingsIndex({
                                                     "inline-block px-2 py-0.5 rounded-md text-[10px] uppercase font-bold tracking-wide border",
                                                     mapping.role === 'Admin'
                                                         ? "bg-purple-50 border-purple-100 text-purple-700"
+                                                        : mapping.role === 'Viewer'
+                                                            ? "bg-sky-50 border-sky-100 text-sky-700"
                                                         : "bg-slate-50 border-slate-200/60 text-slate-600"
                                                 )}>
                                                     {mapping.role}

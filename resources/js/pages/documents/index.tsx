@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Edit, Eye, Plus, Search, Trash2, FileText, Folder, User2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -20,6 +20,7 @@ export default function DocumentsIndex({
     departments: ResourceCollection<Department>;
     filters: { search?: string; department_id?: string; extension?: string };
 }) {
+    const { props } = usePage();
     const departmentOptions = resourceArray(departments);
 
     function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -59,9 +60,11 @@ export default function DocumentsIndex({
                     </div>
                 </form>
 
-                <Link href={withUserQuery(documents.create.url())} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-xs font-bold text-white shadow-sm shadow-primary/10 hover:bg-primary/90 active:scale-[0.98] transition-all whitespace-nowrap">
-                    <Plus className="h-4 w-4" /> Upload IOM
-                </Link>
+                {props.permissions.canCreateDocuments && (
+                    <Link href={withUserQuery(documents.create.url())} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-xs font-bold text-white shadow-sm shadow-primary/10 hover:bg-primary/90 active:scale-[0.98] transition-all whitespace-nowrap">
+                        <Plus className="h-4 w-4" /> Upload IOM
+                    </Link>
+                )}
             </div>
 
             {items.data.length ? (
@@ -72,6 +75,7 @@ export default function DocumentsIndex({
                                 <th className="px-4 py-4 flex items-center gap-1.5"><FileText className="h-3.5 w-3.5" /> Nomor IOM</th>
                                 <th className="px-4 py-4"><Folder className="h-3.5 w-3.5 inline mr-1" />Department</th>
                                 <th className="px-4 py-4"><User2 className="h-3.5 w-3.5 inline mr-1" />Uploader</th>
+                                <th className="px-4 py-4"><Calendar className="h-3.5 w-3.5 inline mr-1" />Effective Date</th>
                                 <th className="px-4 py-4 text-center">Berkas</th>
                                 <th className="px-4 py-4"><Calendar className="h-3.5 w-3.5 inline mr-1" />Tanggal</th>
                                 <th className="px-4 py-4 text-right">Aksi</th>
@@ -83,6 +87,7 @@ export default function DocumentsIndex({
                                     <td className="px-4 py-3.5 font-bold text-slate-800">{document.iom_number || '-'}</td>
                                     <td className="px-4 py-3.5 font-semibold text-slate-600">{document.department?.name}</td>
                                     <td className="px-4 py-3.5 text-slate-500">{document.uploader?.name}</td>
+                                    <td className="px-4 py-3.5 text-slate-500">{document.effective_date || '-'}</td>
                                     <td className="px-4 py-3.5 text-center">
                                         <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200/40 text-[10px] font-bold text-slate-500">
                                             {document.files_count ?? document.files?.length ?? 0} file
@@ -94,18 +99,22 @@ export default function DocumentsIndex({
                                             <Link href={withUserQuery(documents.show.url(document.id))} className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/5 text-primary border border-primary/10 hover:bg-primary hover:text-white shadow-xs transition-all" title="Detail">
                                                 <Eye className="h-3.5 w-3.5" />
                                             </Link>
-                                            <Link href={withUserQuery(documents.edit.url(document.id))} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 shadow-xs transition-all" title="Edit">
-                                                <Edit className="h-3.5 w-3.5" />
-                                            </Link>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                onClick={() => void deleteDocument(document)}
-                                                className="h-8 w-8 rounded-lg p-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 cursor-pointer"
-                                                title="Hapus"
-                                            >
-                                                <Trash2 className="h-3.5 w-3.5" />
-                                            </Button>
+                                            {document.can?.edit && (
+                                                <Link href={withUserQuery(documents.edit.url(document.id))} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 shadow-xs transition-all" title="Edit">
+                                                    <Edit className="h-3.5 w-3.5" />
+                                                </Link>
+                                            )}
+                                            {document.can?.delete && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    onClick={() => void deleteDocument(document)}
+                                                    className="h-8 w-8 rounded-lg p-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 cursor-pointer"
+                                                    title="Hapus"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </Button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

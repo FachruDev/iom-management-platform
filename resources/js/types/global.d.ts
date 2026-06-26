@@ -12,7 +12,7 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             currentUser: CurrentUser | null;
-            permissions: { isAdmin: boolean };
+            permissions: { isAdmin: boolean; canCreateDocuments: boolean };
             flash: { success?: string | null; error?: string | null };
             iomConfig: { maxFileSizeKb: number; allowedExtensions: string[] };
             [key: string]: unknown;

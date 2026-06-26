@@ -21,6 +21,7 @@ class IomDocumentFactory extends Factory
     {
         return [
             'iom_number' => 'IOM-'.fake()->unique()->numerify('#####'),
+            'effective_date' => now()->toDateString(),
             'department_id' => Department::factory(),
             'uploaded_by_id' => UserMapping::factory(),
             'description' => fake()->paragraph(),

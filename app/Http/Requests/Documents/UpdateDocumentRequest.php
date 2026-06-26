@@ -23,6 +23,7 @@ class UpdateDocumentRequest extends FormRequest
 
         return [
             'iom_number' => ['nullable', 'string', 'max:100', Rule::unique('iom_documents', 'iom_number')->ignore($documentId)],
+            'effective_date' => ['nullable', 'date'],
             'department_id' => ['required', 'integer', 'exists:departments,id'],
             'description' => ['required', 'string', 'max:5000'],
             'files' => ['nullable', 'array'],

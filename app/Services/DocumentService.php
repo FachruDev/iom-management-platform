@@ -26,6 +26,7 @@ class DocumentService
         return DB::transaction(function () use ($data, $files, $user): IomDocument {
             $document = IomDocument::create([
                 'iom_number' => $data['iom_number'] ?? null,
+                'effective_date' => $data['effective_date'] ?? now()->toDateString(),
                 'department_id' => $data['department_id'],
                 'uploaded_by_id' => $user->mappingId,
                 'description' => $data['description'],
@@ -49,10 +50,11 @@ class DocumentService
     public function update(IomDocument $document, array $data, array $files, CurrentUserData $user): IomDocument
     {
         return DB::transaction(function () use ($document, $data, $files, $user): IomDocument {
-            $oldValues = $document->only(['iom_number', 'department_id', 'description']);
+            $oldValues = $document->only(['iom_number', 'effective_date', 'department_id', 'description']);
 
             $document->update([
                 'iom_number' => $data['iom_number'] ?? null,
+                'effective_date' => $data['effective_date'] ?? now()->toDateString(),
                 'department_id' => $data['department_id'],
                 'description' => $data['description'],
             ]);

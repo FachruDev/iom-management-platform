@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Activity, Building2, FileText, Home, Menu, PanelLeftClose, PanelLeftOpen, Users, X, ChevronRight } from 'lucide-react';
+import { Activity, Building2, FileText, Home, Menu, PanelLeftClose, PanelLeftOpen, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
