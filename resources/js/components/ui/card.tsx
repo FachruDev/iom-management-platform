@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
     return (
-        <section className={cn('rounded-[24px] border border-slate-100 bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.01)]', className)}>
+        <section className={cn('rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.01)]', className)}>
             {children}
         </section>
     );
@@ -17,9 +17,9 @@ const colorMap: Record<string, { bg: string; badge: string; text: string }> = {
     green: { bg: 'bg-emerald-50/60', badge: 'bg-emerald-100/70', text: 'text-emerald-700' },
 };
 
-export function StatPanel({ title, value, label, icon: Icon, color = 'primary' }: { 
-    title: string; 
-    value: string | number; 
+export function StatPanel({ title, value, label, icon: Icon, color = 'primary' }: {
+    title: string;
+    value: string | number;
     label?: string;
     icon: any;
     color?: 'primary' | 'purple' | 'red' | 'blue' | 'green'
