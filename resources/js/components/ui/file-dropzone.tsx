@@ -24,7 +24,7 @@ export function FileDropzone({
             });
 
             if (invalid) {
-                setError(`File ${invalid.name} tidak sesuai tipe atau melebihi batas ${Math.round(maxFileSizeKb / 1024)} MB.`);
+                setError(`Berkas "${invalid.name}" format tidak didukung atau ukuran melebihi ${Math.round(maxFileSizeKb / 1024)} MB.`);
                 return;
             }
 
@@ -35,27 +35,49 @@ export function FileDropzone({
     );
 
     return (
-        <div>
+        <div className="space-y-4">
             <label
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={(event) => {
                     event.preventDefault();
                     addFiles(event.dataTransfer.files);
                 }}
-                className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center hover:border-primary"
+                className="group flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center transition-all duration-300 hover:border-primary hover:bg-white hover:shadow-sm"
             >
-                <UploadCloud className="h-10 w-10 text-primary" />
-                <span className="mt-3 text-sm font-medium text-slate-900">Drag & drop attachment atau klik untuk memilih</span>
-                <span className="mt-1 text-xs text-slate-500">{allowedExtensions.join(', ').toUpperCase()} maksimal {Math.round(maxFileSizeKb / 1024)} MB per file</span>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/5 text-primary border border-primary/10 group-hover:scale-105 transition-transform duration-300">
+                    <UploadCloud className="h-5 w-5" />
+                </div>
+
+                <span className="mt-4 text-sm font-bold text-slate-700 group-hover:text-primary transition-colors">
+                    Drag & drop attachment atau klik untuk memilih
+                </span>
+                <span className="mt-1 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    {allowedExtensions.join(', ')} • Maks {Math.round(maxFileSizeKb / 1024)} MB per file
+                </span>
                 <input type="file" multiple className="hidden" onChange={(event) => event.target.files && addFiles(event.target.files)} />
             </label>
-            {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+
+            {error && (
+                <p className="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-100 px-3 py-2 rounded-xl w-fit">
+                    {error}
+                </p>
+            )}
+
             {files.length ? (
-                <div className="mt-3 space-y-2">
+                <div className="space-y-2">
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">Berkas Terlampir ({files.length})</p>
                     {files.map((file, index) => (
-                        <div key={`${file.name}-${index}`} className="flex items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
-                            <span className="truncate">{file.name}</span>
-                            <Button type="button" variant="ghost" className="h-8 px-2" onClick={() => onChange(files.filter((_, fileIndex) => fileIndex !== index))}>
+                        <div key={`${file.name}-${index}`} className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white pl-4 pr-2 py-2 text-xs font-semibold text-slate-700 shadow-sm/30 group/file transition-colors hover:bg-slate-50/50">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="h-1.5 w-1.5 rounded-full bg-primary/40 group-hover/file:bg-primary transition-colors" />
+                                <span className="truncate max-w-md">{file.name}</span>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="h-8 w-8 rounded-xl p-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100"
+                                onClick={() => onChange(files.filter((_, fileIndex) => fileIndex !== index))}
+                            >
                                 <X className="h-4 w-4" />
                             </Button>
                         </div>
