@@ -3,47 +3,40 @@ import { cn } from '@/lib/utils';
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
     return (
-        <section className={cn('rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm/60 transition-all duration-300 hover:shadow-md/40', className)}>
+        <section className={cn('rounded-[24px] border border-slate-100 bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.01)]', className)}>
             {children}
         </section>
     );
 }
 
-export function StatCard({ title, value, icon: Icon, meta, variant = 'default' }: {
-    title: string;
-    value: string | number;
-    icon?: any;
-    meta?: string;
-    variant?: 'default' | 'gradient'
-}) {
-    return (
-        <Card className={cn(
-            "relative overflow-hidden group border-slate-200/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300",
-            variant === 'gradient' && "bg-linear-to-br from-white via-slate-50/50 to-slate-100/50 border-slate-200"
-        )}>
-            {/* Decorative soft glow background on hover */}
-            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-slate-400/5 blur-2xl transition-all duration-500 group-hover:bg-primary/10" />
+const colorMap: Record<string, { bg: string; badge: string; text: string }> = {
+    primary: { bg: 'bg-primary/5', badge: 'bg-primary/10', text: 'text-primary' },
+    purple: { bg: 'bg-purple-50/60', badge: 'bg-purple-200/60', text: 'text-purple-700' },
+    red: { bg: 'bg-rose-50/60', badge: 'bg-rose-100/70', text: 'text-rose-700' },
+    blue: { bg: 'bg-sky-50/60', badge: 'bg-sky-100/70', text: 'text-sky-700' },
+    green: { bg: 'bg-emerald-50/60', badge: 'bg-emerald-100/70', text: 'text-emerald-700' },
+};
 
-            <div className="flex items-start justify-between relative z-10">
-                <div className="space-y-2.5">
-                    <p className="text-xs font-bold tracking-wider uppercase text-slate-400/90">{title}</p>
-                    <p className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                        {value}
-                    </p>
-                </div>
-                {Icon && (
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-slate-500 shadow-sm/50 group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:scale-105 transition-all duration-300">
-                        <Icon className="h-5 w-5" />
-                    </div>
-                )}
+export function StatPanel({ title, value, label, icon: Icon, color = 'primary' }: { 
+    title: string; 
+    value: string | number; 
+    label?: string;
+    icon: any;
+    color?: 'primary' | 'purple' | 'red' | 'blue' | 'green'
+}) {
+    const theme = colorMap[color];
+
+    return (
+        <div className={cn('flex items-center gap-4 rounded-2xl p-4 transition-all duration-200 hover:scale-[1.01]', theme.bg)}>
+            <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm/10 transition-transform duration-300', theme.badge, theme.text)}>
+                <Icon className="h-5 w-5" />
             </div>
-            {meta ? (
-                <div className="mt-4 pt-3 border-t border-slate-100/80 relative z-10">
-                    <p className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-                        {meta}
-                    </p>
-                </div>
-            ) : null}
-        </Card>
+            <div className="min-w-0">
+                <h4 className="text-sm font-bold text-slate-800">{title}</h4>
+                <p className="text-xs font-medium text-slate-500 mt-0.5">
+                    <span className="font-bold text-slate-700">{value}</span> {label || 'Item'}
+                </p>
+            </div>
+        </div>
     );
 }
