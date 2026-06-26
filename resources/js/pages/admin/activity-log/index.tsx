@@ -34,7 +34,6 @@ export default function ActivityLogIndex({
         <AppLayout title="Activity Log">
             <Head title="Activity Log" />
 
-            {/* Top Grid: Berbasis Panel Pastel */}
             <div className="mb-6 grid gap-4 md:grid-cols-3">
                 <StatPanel title="Aktivitas Hari Ini" value={todayCount} label="Tindakan Tercatat" icon={Clock} color="primary" />
                 <Card className="md:col-span-2 p-5">
@@ -55,7 +54,6 @@ export default function ActivityLogIndex({
                 </Card>
             </div>
 
-            {/* Form Filter Bergaya Rounded Kapsul */}
             <form
                 onSubmit={(event) => {
                     event.preventDefault();
@@ -77,11 +75,9 @@ export default function ActivityLogIndex({
                 </select>
                 <input type="date" name="date_from" defaultValue={filters.date_from ?? ''} className="rounded-xl border border-slate-200/80 bg-slate-50/40 px-3 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white focus:outline-hidden transition-all text-slate-500" />
 
-                {/* Button Aksi dengan Identitas Warna Utama (Primary) */}
-                <Button className="rounded-xl h-auto py-2.5 text-xs"><Search className="h-3.5 w-3.5" /> Terapkan</Button>
+                <Button className="rounded-xl h-auto py-2.5 text-xs cursor-pointer"><Search className="h-3.5 w-3.5" /> Terapkan</Button>
             </form>
 
-            {/* Main Log Section */}
             <div className="grid gap-6 xl:grid-cols-3">
                 <div className="xl:col-span-2 space-y-4">
                     {activities.data.length ? (
@@ -119,7 +115,6 @@ export default function ActivityLogIndex({
                     <div><Pagination links={activities.links} /></div>
                 </div>
 
-                {/* Right Sidebar: Timeline Gaya Pop Dinamis */}
                 <Card className="p-6">
                     <div className="mb-5 border-b border-slate-50 pb-4">
                         <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">

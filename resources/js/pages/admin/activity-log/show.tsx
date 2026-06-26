@@ -15,13 +15,11 @@ export default function ActivityLogShow({ activity }: { activity: ResourceItem<A
         <AppLayout title="Detail Activity Log">
             <Head title="Detail Activity Log" />
 
-            {/* Tombol Kembali Menggunakan Warna Identitas Primary */}
             <Link href={withUserQuery(admin.activityLog.index.url())} className="mb-5 inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:opacity-80 transition-opacity">
                 <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Daftar
             </Link>
 
             <div className="grid gap-6 lg:grid-cols-2">
-                {/* Informasi Audit */}
                 <Card className="p-6">
                     <div className="mb-5 border-b border-slate-50 pb-4 flex items-center gap-2">
                         <Shield className="h-4 w-4 text-primary" />
@@ -60,14 +58,12 @@ export default function ActivityLogShow({ activity }: { activity: ResourceItem<A
                     </dl>
                 </Card>
 
-                {/* Detail Perubahan Objek JSON */}
                 <Card className="p-6">
                     <div className="mb-5 border-b border-slate-50 pb-4 flex items-center gap-2">
                         <Code className="h-4 w-4 text-slate-500" />
                         <h2 className="text-sm font-bold text-slate-800">Payload Mutasi Perubahan Data</h2>
                     </div>
                     <div className="relative group rounded-2xl overflow-hidden shadow-inner">
-                        {/* Hiasan Header Panel Code */}
                         <div className="bg-slate-900 px-4 py-2 flex items-center justify-between border-b border-slate-800/60">
                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><Layers className="h-3 w-3" /> JSON Schema Object</span>
                             <div className="flex gap-1.5">
