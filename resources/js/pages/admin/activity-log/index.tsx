@@ -85,7 +85,7 @@ export default function ActivityLogIndex({
             <div className="grid gap-6 xl:grid-cols-3">
                 <div className="xl:col-span-2 space-y-4">
                     {activities.data.length ? (
-                        <div className="overflow-x-auto rounded-[24px] border border-slate-100 bg-white shadow-sm/30 p-2">
+                        <div className="overflow-x-auto rounded-3xl border border-slate-100 bg-white shadow-sm/30 p-2">
                             <table className="w-full text-left text-xs border-collapse">
                                 <thead>
                                     <tr className="text-slate-400 font-bold uppercase tracking-wider border-b border-slate-50">
@@ -129,7 +129,7 @@ export default function ActivityLogIndex({
                     <div className="space-y-4">
                         {latest.map((activity) => (
                             <div key={activity.id} className="relative pl-5 border-l-2 border-slate-100 py-1 group">
-                                <div className="absolute -left-[5px] top-2 h-2 w-2 rounded-full bg-slate-300 group-hover:bg-primary shadow-xs transition-all duration-300 group-hover:scale-110" />
+                                <div className="absolute -left-1.25 top-2 h-2 w-2 rounded-full bg-slate-300 group-hover:bg-primary shadow-xs transition-all duration-300 group-hover:scale-110" />
                                 <p className="text-xs font-bold text-slate-700 leading-normal group-hover:text-slate-900 transition-colors">{activity.activity}</p>
                                 <p className="text-[10px] font-semibold text-slate-400 mt-1 flex items-center gap-1">
                                     <span className="text-slate-500">{activity.user_name || 'System'}</span>
